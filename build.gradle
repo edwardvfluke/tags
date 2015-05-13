@@ -29,8 +29,8 @@ dependencies {
 ext {
   gitHash = "git rev-parse --short HEAD".execute().text.trim() // get the git commmit hash
   patch_version = System.getenv("PATCH_VERSION") != null ? System.getenv("PATCH_VERSION") : "9"
-  build_number = System.getenv("BUILD_NUMBER") as Integer ?: 53
-  version_code = System.getenv("VERSION_CODE") as Integer ?: 1
+  build_number = System.getenv("BUILD_NUMBER") as Integer ?: 54
+  version_code = System.getenv("VERSION_CODE") as Integer ?: 3
   versionCode = version_code
   versionName = "1.2.${patch_version}.${build_number}" // using Jenkins parameters, build number, and git commit hash to construct the version
 }
@@ -47,9 +47,7 @@ ext {
     repo.tag.add {
     name = "build/${versionName}"
     message = "Release of ${versionName}, versionCode ${versionCode}."
-    println "Release of ${versionName}, versionCode ${versionCode}."
     }
     repo.push(tags: true)
-  
   }
 }
