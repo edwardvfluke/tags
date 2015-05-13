@@ -1,0 +1,55 @@
+import org.ajoberstar.grgit.*
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'com.github.jcandksolutions.gradle:android-unit-test:2.1.1'
+        classpath 'org.ajoberstar:gradle-git:1.1.0'
+        classpath 'org.ajoberstar:grgit:1.1.0'
+    }
+
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+dependencies {
+}
+
+ext {
+  gitHash = "git rev-parse --short HEAD".execute().text.trim() // get the git commmit hash
+  patch_version = System.getenv("PATCH_VERSION") != null ? System.getenv("PATCH_VERSION") : "9"
+  build_number = System.getenv("BUILD_NUMBER") as Integer ?: 53
+  version_code = System.getenv("VERSION_CODE") as Integer ?: 1
+  versionCode = version_code
+  versionName = "1.2.${patch_version}.${build_number}" // using Jenkins parameters, build number, and git commit hash to construct the version
+}
+
+  ext.repo = Grgit.open(project.file('.'))
+  version = "build/${versionName}"
+
+  android {
+
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+  task tagRelease << {
+    repo.tag.add {
+    name = "build/${versionName}"
+    message = "Release of ${versionName}, versionCode ${versionCode}."
+    println "Release of ${versionName}, versionCode ${versionCode}."
+    }
+    repo.push(tags: true)
+  
+  }
+}
